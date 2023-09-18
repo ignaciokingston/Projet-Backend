@@ -1,9 +1,17 @@
 const express = require ('express');
 
+const mongoose = require('mongoose');
+
 const app = express ();
 
 //pour extraire le corps JSON
 app.use(express.json());
+
+mongoose.connect('mongodb+srv://ignaciokingston2:Coursdebackend7@cluster0.iqzqkbs.mongodb.net/?retryWrites=true&w=majority',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use((req, res, next) => {
     //pour accéder à l'API depuis n'importe quel origine
@@ -15,12 +23,13 @@ app.use((req, res, next) => {
     next();
   });
 
-app.post('/api/book', (req, res, next)=> {
+  app.post('/api/book', (req, res, next)=> {
     console.log(req.body);
     res.status(201).json ({
         message: 'Objet créé'
     });
 });
+
 
 app.use('/api/book', (req, res) => {
     const book = [
