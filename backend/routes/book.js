@@ -2,9 +2,9 @@ const express = require ('express');
 
 const router = express.Router();
 
-const bookCtrl = require('../controllers/book')
+const bookCtrl = require('../controllers/book');
 
-//routage
+//routage grâce au méthode router
 router.get('/', bookCtrl.getAllBook); //tous les livres
 router.post('/', bookCtrl.createBook);
 router.get('/:id', bookCtrl.getOneBook);
