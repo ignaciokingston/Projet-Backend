@@ -7,9 +7,13 @@ const app = express ();
 //pour extraire le corps JSON
 app.use(express.json());
 
+//enregistrement du router
 const bookRoutes = require ('./routes/book');
-
 app.use('/api/book', bookRoutes);
+
+//enregistrement du router 
+const userRoutes =require('./router/user');
+app.use('/api/auth', userRoutes);
 
 mongoose.connect('mongodb+srv://ignaciokingston2:Coursdebackend7@cluster0.iqzqkbs.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
