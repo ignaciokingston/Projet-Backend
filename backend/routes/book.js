@@ -14,7 +14,7 @@ const bookCtrl = require('../controllers/book');
 router.get('/', auth, bookCtrl.getAllBook); //tous les livres
 router.post('/', auth, multer, bookCtrl.createBook); //ajout multer après auth par sécurité
 router.get('/:id', auth, bookCtrl.getOneBook);
-router.put('/:id', auth, bookCtrl.modifyBook);
+router.put('/:id', auth, multer, bookCtrl.modifyBook);
 router.delete('/:id', auth, bookCtrl.deleteBook);
 
 module.exports = router;
