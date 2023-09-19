@@ -3,11 +3,17 @@ const Book = require ('../models/book');
 
 //logique route POST
 exports.createBook = (req, res, next)=> {
+    //transformation d'un objet string à un objet JS exploitable
+    const bookObject = JSON.parse(req.body.book);
+    //par messure de sécurité; on les remplacent par le userId du token par middleware de auth
+    delete bookObject._id;
+    delete bookObject._userId;
     const book= new Book ({
-        usedId: req.params.userId,
+        usedId: req.auth.userId,
         title: req.params.title,
         author: req.params.author,
-        imageUrl: req.params.imageUrl,
+        //pour résoudre l'URL complète de l'image (ATT méthode GET !)
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         year: req.params.year,
         genre: req.params.genre,
         ratings: [

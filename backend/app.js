@@ -15,6 +15,11 @@ app.use('/api/book', bookRoutes);
 const userRoutes =require('./router/user');
 app.use('/api/auth', userRoutes);
 
+//pour accéder au path du serveur
+const path = require ('path');
+//pour indiquer à express de gérer la ressource images de manière statique
+app.use('/image', express.static(path.join(__dirname, 'images')));
+
 mongoose.connect('mongodb+srv://ignaciokingston2:Coursdebackend7@cluster0.iqzqkbs.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
