@@ -7,6 +7,9 @@ const app = express ();
 //pour extraire le corps JSON
 app.use(express.json());
 
+//import modèle mongoose
+const Book = require ('/models/book')
+
 mongoose.connect('mongodb+srv://ignaciokingston2:Coursdebackend7@cluster0.iqzqkbs.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
@@ -23,11 +26,23 @@ app.use((req, res, next) => {
     next();
   });
 
-  app.post('/api/book', (req, res, next)=> {
-    console.log(req.body);
-    res.status(201).json ({
-        message: 'Objet créé'
+//logique route POST
+app.post('/api/book', (req, res, next)=> {
+    delete req.body._id
+    const book = new Book({
+        ...req.body
     });
+    //méthode save pour enregistrer dans la base de données
+    book.save()
+    .then (() => res.status(201).json ({message: 'Livre enregistré !'}))
+    .catch(error => res.status(400).json({ error }))
+    });
+
+//logique route GET x 1 élément en particulier
+app.get('/api/book/:id', (req, res, next) =>{
+    Book.findOne({_id: req.params.id})
+    .then(book=> res.status(200).json(book))
+    .catch(error => res.status (404).json({ error }));
 });
 
 
@@ -50,6 +65,13 @@ app.use('/api/book', (req, res) => {
         },
     ];
     res.status(200).json(book);
+});
+
+app.use('/api/book', (req, res, next) =>{
+    //méthode find pour récuperer les livres
+    Book.find()
+    .then(books => res.status(200).json(books))
+    .catch(error => res.status(400).json({ error }));
 });
 
 module.exports = app;
