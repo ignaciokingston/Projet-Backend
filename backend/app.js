@@ -45,6 +45,20 @@ app.get('/api/book/:id', (req, res, next) =>{
     .catch(error => res.status (404).json({ error }));
 });
 
+//logique route PUT x modifier un élément
+app.put('/api/book/:id', (req, res, next) =>{
+    Book.updateOne({_id: req.params.id},{...req.body,_id: req.params.id})
+    .then(book=> res.status(200).json({message: 'Livre modifié !'}))
+    .catch(error => res.status (404).json({ error }));
+});
+
+//logique route DELETE x supprimer un élément
+app.delete ('/api/book/:id', (req, res, next) =>{
+    Book.deleteOne({_id: req.params.id})
+    .then(book=> res.status(200).json({message: 'Livre supprimé !'}))
+    .catch(error => res.status (404).json({ error }));
+});
+
 
 app.use('/api/book', (req, res) => {
     const book = [
