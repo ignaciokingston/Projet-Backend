@@ -1,6 +1,9 @@
 //import modèle mongoose
 const Book = require ('../models/book');
 
+//import package fs - file system- pour gérer modifications (supprimer) des fichiers
+const fs = require('fs');
+
 //logique route POST
 exports.createBook = (req, res, next)=> {
     //transformation d'un objet string à un objet JS exploitable
@@ -9,7 +12,7 @@ exports.createBook = (req, res, next)=> {
     delete bookObject._id;
     delete bookObject._userId;
     const book= new Book ({
-        usedId: req.auth.userId,
+        userId: req.auth.userId,
         title: req.params.title,
         author: req.params.author,
         //pour résoudre l'URL complète de l'image (ATT méthode GET !)
@@ -41,7 +44,9 @@ exports.getOneBook = (req, res, next) =>{
 exports.modifyBook = (req, res, next) =>{
     //pour vérifier s'il y a un fichier
     const bookObject= req.file ? {
+        //transforme objet stringified en objet JS exploitable
         ...JSON.parse(req.body.book),
+        //comme dans la route POST - construire l'URL
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body};
 
@@ -64,9 +69,25 @@ exports.modifyBook = (req, res, next) =>{
 
 //logique route DELETE x supprimer un élément
 exports.deleteBook = (req, res, next) =>{
+    //pour vérifier le userId
     Book.deleteOne({_id: req.params.id})
-    .then(book=> res.status(200).json({message: 'Livre supprimé !'}))
-    .catch(error => res.status (404).json({ error }));
+    .then(book=> {
+        if(book.userId != req.auth.userId) {
+            res.status(401).json({message:'Not authorized'});
+        } else {
+            //l'image contient un segment images dans l'URL
+            const filename = book.imageUrl.split('/images')[1];
+            //fonction unlink du package fs pour supprimer le fichier
+            fs.unlink(`images/${filename}`, () => {
+                Book.deleteOne ({_id: req.params.id})
+                .then(() => { res.status(200).json({ message: 'Livre supprimé !' })})
+                .catch(error => res.status(401).json({ error }));
+            });
+        }
+    }) 
+    .catch(error => {
+        res.status (500).json({ error });
+    });
 };
 
 //logique route GET x montrer les livres

@@ -6,7 +6,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 
 //import middleware multer-config
-const multer = require('..middleware/multer-config');
+const multer = require('../middleware/multer-config');
 
 const bookCtrl = require('../controllers/book');
 

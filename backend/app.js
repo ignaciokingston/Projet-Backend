@@ -12,7 +12,7 @@ const bookRoutes = require ('./routes/book');
 app.use('/api/book', bookRoutes);
 
 //enregistrement du router 
-const userRoutes =require('./router/user');
+const userRoutes =require('./routes/user');
 app.use('/api/auth', userRoutes);
 
 //pour accéder au path du serveur
