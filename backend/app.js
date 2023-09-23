@@ -30,7 +30,7 @@ mongoose.connect('mongodb+srv://ignaciokingston2:Coursdebackend7@cluster0.iqzqkb
 
 //enregistrement du router book
 const bookRoutes = require ('./routes/book');
-app.use('/api/book', bookRoutes);
+app.use('/api/books', bookRoutes);
 
 //enregistrement du router user
 const userRoutes = require ('./routes/user');

@@ -11,26 +11,16 @@ exports.createBook = (req, res, next)=> {
     //par messure de sécurité; on les remplacent par le userId du token par middleware de auth
     delete bookObject._id;
     delete bookObject._userId;
-    const book= new Book ({
+    const book= new Book({
+        ...bookObject,
         userId: req.auth.userId,
-        title: req.params.title,
-        author: req.params.author,
         //pour résoudre l'URL complète de l'image (ATT méthode GET !)
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-        year: req.params.year,
-        genre: req.params.genre,
-        ratings: [
-            {
-                userId: req.params.ratings.userId,
-                grade: req.params.ratings.grade,
-            }
-        ],
-        averageRating: req.params.averageRating
-        });
+    });
         //méthode save pour enregistrer dans la base de données
         book.save()
-        .then (() => res.status(201).json ({message: 'Livre enregistré !'}))
-        .catch(error => res.status(400).json({ error }))
+        .then (() => {res.status(201).json ({message: 'Livre enregistré !'})})
+        .catch(error => {res.status(400).json({ error })})
 };
 
 //logique route GET x 1 élément en particulier
