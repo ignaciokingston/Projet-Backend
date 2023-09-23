@@ -15,7 +15,7 @@ exports.createBook = (req, res, next)=> {
         ...bookObject,
         userId: req.auth.userId,
         //pour résoudre l'URL complète de l'image (ATT méthode GET !)
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
         //méthode save pour enregistrer dans la base de données
         book.save()
