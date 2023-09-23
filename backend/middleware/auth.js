@@ -11,7 +11,7 @@ module.exports= (req, res, next) => {
         const usedId =decodedToken.userId;
         //ajout dans la rêquete
         req.auth = {
-            usedId: usedId
+            userId: userId
         };
         next();
     } catch(error) {

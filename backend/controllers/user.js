@@ -16,8 +16,8 @@ bcrypt.hash(req.body.password, 10)
         password: hash
     });
     user.save()
-    .then(() => resizeTo.status(201).json ({ message: 'Utilisateur crée !'}))
-    .catch(error => resizeTo.status(400).json({ error}));
+    .then(() => res.status(201).json ({ message: 'Utilisateur créé !'}))
+    .catch(error => res.status(400).json({ error }));
     })
     .catch(error => res.status(500).json({ error }));    
 };
@@ -28,7 +28,8 @@ exports.login = (req, res, next) => {
         if(!user){
             return res.status(401).json({ message: 'Paire login/mot de passe incorrecte'});
         }
-        bcrypt.compare(req.body.password)
+        //ici on compare le mot de passe avec le hash
+        bcrypt.compare(req.body.password, user.password)
         .then(valid => {
             if(!valid){
                 return res.status(401).json({ message: 'Paire login/mot de passe incorrecte'});

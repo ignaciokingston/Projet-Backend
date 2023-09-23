@@ -1,24 +1,10 @@
+const listEndpoints = require('express-list-endpoints');
+
 const express = require ('express');
 
 const mongoose = require('mongoose');
 
 const app = express ();
-
-//pour extraire le corps JSON
-app.use(express.json());
-
-//enregistrement du router
-const bookRoutes = require ('./routes/book');
-app.use('/api/book', bookRoutes);
-
-//enregistrement du router 
-const userRoutes =require('./routes/user');
-app.use('/api/auth', userRoutes);
-
-//pour accéder au path du serveur
-const path = require ('path');
-//pour indiquer à express de gérer la ressource images de manière statique
-app.use('/image', express.static(path.join(__dirname, 'images')));
 
 mongoose.connect('mongodb+srv://ignaciokingston2:Coursdebackend7@cluster0.iqzqkbs.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -35,5 +21,24 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
   });
+
+
+//pour extraire le corps JSON
+app.use(express.json());
+
+//enregistrement du router book
+const bookRoutes = require ('./routes/book');
+app.use('/api/book', bookRoutes);
+
+//enregistrement du router user
+const userRoutes = require ('./routes/user');
+app.use('/api/auth', userRoutes);
+
+//pour accéder au path du serveur
+const path = require ('path');
+//pour indiquer à express de gérer la ressource images de manière statique
+app.use('/image', express.static(path.join(__dirname, 'images')));
+
+console.log(listEndpoints(app))
 
 module.exports = app;
