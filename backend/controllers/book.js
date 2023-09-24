@@ -26,8 +26,10 @@ exports.createBook = (req, res, next)=> {
 //logique route GET x 1 élément en particulier
 exports.getOneBook = (req, res, next) =>{
     Book.findOne({_id: req.params.id})
-    .then(book=> res.status(200).json(book))
-    .catch(error => res.status (404).json({ error }));
+    .then((book)=> {res.status(200).json(book);
+    })
+    .catch((error) => {res.status (404).json({ error });
+    });
 };
 
 //logique route PUT x modifier un élément
@@ -47,7 +49,7 @@ exports.modifyBook = (req, res, next) =>{
             if (book.userId != req.auth.userId) {
                 res.status(401).json({message: 'Not authorized'});
             } else {
-                Book.updateOne({_id: req.params.id},{...req.body,_id: req.params.id})
+                Book.updateOne({_id: req.params.id}, {...bookObject,_id: req.params.id})
                 .then(book=> res.status(200).json({message: 'Livre modifié !'}))
                 .catch(error => res.status (404).json({ error }));
             }
@@ -60,13 +62,13 @@ exports.modifyBook = (req, res, next) =>{
 //logique route DELETE x supprimer un élément
 exports.deleteBook = (req, res, next) =>{
     //pour vérifier le userId
-    Book.deleteOne({_id: req.params.id})
-    .then(book=> {
-        if(book.userId != req.auth.userId) {
+    Book.findOne({ _id: req.params.id})
+    .then(book => {
+        if (book.userId != req.auth.userId) {
             res.status(401).json({message:'Not authorized'});
         } else {
             //l'image contient un segment images dans l'URL
-            const filename = book.imageUrl.split('/images')[1];
+            const filename = book.imageUrl.split('/images/')[1];
             //fonction unlink du package fs pour supprimer le fichier
             fs.unlink(`images/${filename}`, () => {
                 Book.deleteOne ({_id: req.params.id})
@@ -75,7 +77,7 @@ exports.deleteBook = (req, res, next) =>{
             });
         }
     }) 
-    .catch(error => {
+    .catch( error => {
         res.status (500).json({ error });
     });
 };
@@ -84,6 +86,8 @@ exports.deleteBook = (req, res, next) =>{
 exports.getAllBook = (req, res, next) =>{
     //méthode find pour récuperer les livres
     Book.find()
-    .then(books => res.status(200).json(books))
-    .catch(error => res.status(400).json({ error }));
+    .then((books) => {res.status(200).json(books);
+    })
+    .catch((error) => {res.status(400).json({ error });
+    });
 };

@@ -11,9 +11,9 @@ const multer = require('../middleware/multer-config');
 const bookCtrl = require('../controllers/book');
 
 //routage grâce au méthode router
-router.get('/', auth, bookCtrl.getAllBook); //tous les livres
+router.get('/', bookCtrl.getAllBook); //tous les livres (pas besoin de auth)
 router.post('/', auth, multer, bookCtrl.createBook); //ajout multer après auth par sécurité
-router.get('/:id', auth, bookCtrl.getOneBook);
+router.get('/:id', bookCtrl.getOneBook); //un livre (pas besoin de auth)
 router.put('/:id', auth, multer, bookCtrl.modifyBook);
 router.delete('/:id', auth, bookCtrl.deleteBook);
 
