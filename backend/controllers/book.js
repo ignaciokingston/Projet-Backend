@@ -106,16 +106,16 @@ exports.getAllBooks = (req, res, next) =>{
 };
 
 //fonction GET x montrer les meilleurs livres
-exports.getBestBooks = async (req, res, next) => {
-    try {
-        const bestBooks = await Book.find({})
-            .sort({ averageRating: -1 }) //pour ranger en ordre descendant
-            .limit(3); //limitation max de 3 livres
+exports.getBestBooks = (req, res, next) => {
+     Book.find({})
+    .sort({ averageRating: -1 }) //pour ranger en ordre descendant
+    .limit(3) //limitation max de 3 livres
 
-        res.status(200).json(bestBooks);
-    } catch (error) {
-        res.status(500).json({ error: "Erreur au moment de montrer les meilleurs livres"})
-    }
+    .then((books) => {res.status(200).json(books);
+    })
+    .catch ((error) => {
+    res.status(500).json({ error });
+    });
 };
 
 //fonction POST - rating
