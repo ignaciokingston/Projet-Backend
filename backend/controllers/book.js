@@ -4,9 +4,6 @@ const Book = require ('../models/book');
 //import package fs - file system- pour gérer modifications (supprimer) des fichiers
 const fs = require('fs');
 
-//import package sharp - por optimiser les images
-const sharp = require ('sharp');
-
 //fonction POST - créer un livre
 exports.createBook = async (req, res, next)=> {
     //transformation d'un objet string à un objet JS exploitable
@@ -124,47 +121,24 @@ exports.getBestBooks = async (req, res, next) => {
 //fonction POST - rating
 exports.ratingBook = (req, res, next) => {
     //Extraction des données de la rêquete
-    const userId = req.auth.userId;
-    const userRating = req.body.rating;
-    //cherche le book par son id
-    Book.findByIdAndUpdate({_id: req.params.id})
-    .then(book => {
-
-        console.log('ID du livre dans req.params:', req.params.id);
-
-        if(book.ratings.some((r) => r.userId === userId)) {
-            return res.status(400).json({ error: 'Vous avez déjà qualifié ce livre'});
+    const userId = req.auth.userId; 
+    const { rating } = req.body;
+    //création objet qui contient userId et la note
+    const userRating = { userId, grade: rating }; 
+    //cherche le book par son id +                  mise à jour de la note +     retourner livre mise à jour     
+    Book.findByIdAndUpdate({_id: req.params.id}, { $push: { ratings : userRating }}, {new:true})
+    .then((book) => {
+        if (!book) {
+            return res.status(404).json({ message: 'Livre non trouve'});
         }
+    //Mise à jour de la note moyenne
+    const sum = book.ratings.reduce((total, rating) => total + rating.grade, 0);
+    book.averageRating = sum / book.ratings.length;
 
-        console.log('Livre avant de sauvegarder:', book);
-
-        //Ajout la note du livre
-        book.ratings.push({ userId, userRating});
-        //Mise à jour de la note moyenne
-        book.averageRating = calculateAverageRating(book.ratings);
-
-        console.log('Livre après mise à jour de la note moyenne:', book);
-
-        //Sauvegarde de changements
-        return book.save()
-        .then(book => {res.json(book)})
-        .then(()=> {
-        res.status(201).json({ message: 'Note ajoutée correctement !', book});
-        }) 
-    })
-
-    .catch ((error) => {
-    res.status(500).json({ error: 'Erreur au moment d\'ajouter la note !'});
+    //Sauvegarde de changements
+    book.save()
+    .then(updatedBook => {res.json(updatedBook)})  //retourne le livre mise à jour
+    .catch ((error) => res.status(500).json({ error }));
     });
 };
 
-
-//fonction pour calculer la note moyenne
-function calculateAverageRating(ratings) {
-    //pour verifier s'il n y a pas de notes
-    if(ratings.length === 0) return 0;
-    //utilisation du méthode reduce pour faire une somme de toutes les notes
-    const sum = ratings.reduce((total, rating) => total + rating.rating, 0);
-    //pour calculer la moyenne - la somme divisée par la quantité de notes faites
-    return sum / ratings.length;
-};
