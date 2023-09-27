@@ -7,6 +7,9 @@ const mongoose = require('mongoose');
 
 const app = express ();
 
+//import dotenv - pour utiliser variables d'environnement
+require('dotenv').config();
+
 app.use((req, res, next) => {
     //pour accéder à l'API depuis n'importe quel origine
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,8 +24,8 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 //connexion mongoose 
-mongoose.connect('mongodb+srv://ignaciokingston2:Coursdebackend7@cluster0.iqzqkbs.mongodb.net/?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
+mongoose.connect(process.env.MONGO_URI, { 
+    useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
