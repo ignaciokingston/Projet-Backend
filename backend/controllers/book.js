@@ -119,26 +119,35 @@ exports.getBestBooks = (req, res, next) => {
 };
 
 //fonction POST - rating
-exports.ratingBook = (req, res, next) => {
-    //Extraction des données de la rêquete
-    const userId = req.auth.userId; 
-    const { rating } = req.body;
-    //création objet qui contient userId et la note
-    const userRating = { userId, grade: rating }; 
-    //cherche le book par son id +                  mise à jour de la note +     retourner livre mise à jour     
-    Book.findByIdAndUpdate({_id: req.params.id}, { $push: { ratings : userRating }}, {new:true})
-    .then((book) => {
-        if (!book) {
+exports.ratingBook = async (req, res, next) => {
+   try { 
+        //Extraction des données de la rêquete
+        const userId = req.auth.userId; 
+        const { rating } = req.body;
+        //création objet qui contient userId et la note
+        const userRating = { userId, grade: rating }; 
+             
+        //chercher et mettre à jour le livre
+        const updatedBook = await Book.findByIdAndUpdate(
+            {_id: req.params.id}, //cherche le book par son id
+            { $push: { ratings : userRating }}, //mise à jour de la note
+            {new:true} //retourner livre mise à jour
+        );
+
+        if (!updatedBook) {
             return res.status(404).json({ message: 'Livre non trouve'});
         }
-    //Mise à jour de la note moyenne
-    const sum = book.ratings.reduce((total, rating) => total + rating.grade, 0);
-    book.averageRating = sum / book.ratings.length;
 
-    //Sauvegarde de changements
-    book.save()
-    .then(updatedBook => {res.json(updatedBook)})  //retourne le livre mise à jour
-    .catch ((error) => res.status(500).json({ error }));
-    });
+        //Mise à jour de la note moyenne
+        const sum = updatedBook.ratings.reduce((total, rating) => total + rating.grade, 0);
+        updatedBook.averageRating = sum /updatedBook.ratings.length;
+
+        //Sauvegarde de changements
+        await updatedBook.save();
+
+        res.json(updatedBook);  //retourne le livre mise à jour
+    } catch (error) { 
+        res.status(500).json({ error });
+    }
 };
 
