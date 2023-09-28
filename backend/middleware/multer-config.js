@@ -1,7 +1,6 @@
 //import multer
 const multer = require('multer');
 
-
 const MIME_TYPES = {
     'image/jpg': 'jpg',
     'image/jpeg': 'jpg',
@@ -9,7 +8,7 @@ const MIME_TYPES = {
 };
 
 //méthode pour configurer le chemin et nom du fichier - memoryStorage pour sharp
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage ({
     //fonction pour sauvegarder les fichiers dans le dossier images
     destination: (req, file, callback) => {
         callback(null, 'images');

@@ -4,6 +4,9 @@ const Book = require ('../models/book');
 //import package fs - file system- pour gérer modifications (supprimer) des fichiers
 const fs = require('fs');
 
+//import sharp
+const sharp = require ('sharp');
+
 //fonction POST - créer un livre
 exports.createBook = async (req, res, next)=> {
     //transformation d'un objet string à un objet JS exploitable
@@ -12,6 +15,13 @@ exports.createBook = async (req, res, next)=> {
     delete bookObject._id;
     delete bookObject._userId;
 
+    const path = `images/${req.file.originalname}.webp`;
+
+    await sharp(req.file.buffer)
+    .resize(500, 600, { fit: 'contain' })
+    .webp({ quality: 80 })
+    .toFile(path);
+
     const book= new Book({
         ...bookObject,
         userId: req.auth.userId,
@@ -19,10 +29,10 @@ exports.createBook = async (req, res, next)=> {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
 
-    console.log('Before Sharp:', req.file.filename);
+    console.log('Before Sharp:', req.file.originalname);
 
 
-        console.log('After Sharp:', req.file.filename);
+        console.log('After Sharp:', req.file.originalname);
 
         //méthode save pour enregistrer dans la base de données
         book.save()
