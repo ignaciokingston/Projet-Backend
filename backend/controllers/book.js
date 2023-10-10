@@ -4,47 +4,30 @@ const Book = require ('../models/book');
 //import package fs - file system- pour gérer modifications (supprimer) des fichiers
 const fs = require('fs');
 
-//import sharp
-const sharp = require ('sharp');
-
 //fonction POST - créer un livre
-exports.createBook = async (req, res, next)=> {
+exports.createBook = (req, res, next)=> {
     //transformation d'un objet string à un objet JS exploitable
     const bookObject = JSON.parse(req.body.book);
     //par messure de sécurité; on les remplacent par le userId du token par middleware de auth
     delete bookObject._id;
     delete bookObject._userId;
 
-    const path = `images/${req.file.originalname}.webp`;
-
-    await sharp(req.file.buffer)
-    .resize(500, 600, { fit: 'contain' })
-    .webp({ quality: 80 })
-    .toFile(path);
-
     const book= new Book({
         ...bookObject,
         userId: req.auth.userId,
         //pour résoudre l'URL complète de l'image (ATT méthode GET !)
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    });
-
-    console.log('Before Sharp:', req.file.originalname);
-
-
-        console.log('After Sharp:', req.file.originalname);
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+        })
 
         //méthode save pour enregistrer dans la base de données
         book.save()
         .then (() => {
-                    res.status(201).json({ message: 'Livre enregistré !' });
+            res.status(201).json({ message: 'Livre enregistré !' });
             })
         .catch(error => {
             res.status(400).json({ error });
         }); 
     };  
-
-
 
 //fonction GET x 1 élément en particulier
 exports.getOneBook = (req, res, next) =>{

@@ -44,6 +44,8 @@ const path = require ('path');
 //pour indiquer à express de gérer la ressource images de manière statique
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+
+
 //pour voir sur la console les endpoints
 console.log(listEndpoints(app))
 

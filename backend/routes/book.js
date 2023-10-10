@@ -8,12 +8,15 @@ const auth = require('../middleware/auth');
 //import middleware multer-config
 const multer = require('../middleware/multer-config');
 
+//import middleware sharp-config
+const sharp = require ('../middleware/sharp-config')
+
 //import controllers book
 const bookCtrl = require('../controllers/book');
 
 //routage grâce au méthode router
 router.get('/', bookCtrl.getAllBooks); //tous les livres (pas besoin de auth)
-router.post('/', auth, multer, bookCtrl.createBook); //ajout multer après auth par sécurité
+router.post('/', auth, multer, sharp, bookCtrl.createBook); //ajout multer après auth par sécurité + sharp pour optimiser l'image
 router.get('/bestrating', bookCtrl.getBestBooks); // meilleurs livres
 router.get('/:id', bookCtrl.getOneBook); //un livre (pas besoin de auth)
 router.put('/:id', auth, multer, bookCtrl.modifyBook); // modifier un livre

@@ -7,8 +7,8 @@ const MIME_TYPES = {
     'image/png' : 'png'
 };
 
-//méthode pour configurer le chemin et nom du fichier - memoryStorage pour sharp
-const storage = multer.memoryStorage ({
+//méthode pour configurer le chemin et nom du fichier
+const storage = multer.diskStorage ({
     //fonction pour sauvegarder les fichiers dans le dossier images
     destination: (req, file, callback) => {
         callback(null, 'images');
